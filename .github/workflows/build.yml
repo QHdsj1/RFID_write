@@ -1,0 +1,29 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch:  # 允许在 GitHub 网页上手动触发
+
+jobs:
+  build:
+    runs-on: windows-latest  # 使用 GitHub 提供的 Windows 服务器
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller pyserial
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --onefile --windowed --hidden-import=serial --name RFID_Tag_Host.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RFID-EXE
+          path: dist/*.exe
